@@ -297,10 +297,15 @@ public class RNWifiModule extends ReactContextBaseJavaModule {
 	//This method will return current ssid
 	@ReactMethod
 	public void getCurrentWifiSSID(final Promise promise) {
-		WifiInfo info = wifi.getConnectionInfo();
+		/* WifiInfo info = wifi.getConnectionInfo();
 
 		// This value should be wrapped in double quotes, so we need to unwrap it.
-		String ssid = info.getSSID();
+		String ssid = info.getSSID(); */
+
+		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+		String ssid = networkInfo.getExtraInfo();
+
 		if (ssid.startsWith("\"") && ssid.endsWith("\"")) {
 			ssid = ssid.substring(1, ssid.length() - 1);
 		}
