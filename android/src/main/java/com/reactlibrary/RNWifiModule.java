@@ -340,10 +340,10 @@ public class RNWifiModule extends ReactContextBaseJavaModule {
 
 	//This method will return current IP
 	@ReactMethod
-	public void getIP(final Callback callback) {
+	public void getIP(final Promise promise) {
 		WifiInfo info = wifi.getConnectionInfo();
 		String stringip = longToIP(info.getIpAddress());
-		callback.invoke(stringip);
+		promise.resolve(stringip);
 	}
 
 	//This method will remove the wifi network as per the passed SSID from the device list
