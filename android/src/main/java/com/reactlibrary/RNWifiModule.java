@@ -93,16 +93,16 @@ public class RNWifiModule extends ReactContextBaseJavaModule {
 
 	//Method to force wifi usage if the user needs to send requests via wifi
 	//if it does not have internet connection. Useful for IoT applications, when
-	//the app needs to communicate and send requests to a device that have no 
+	//the app needs to communicate and send requests to a device that have no
 	//internet connection via wifi.
 
 	//Receives a boolean to enable forceWifiUsage if true, and disable if false.
-	//Is important to enable only when communicating with the device via wifi 
+	//Is important to enable only when communicating with the device via wifi
 	//and remember to disable it when disconnecting from device.
 	@ReactMethod
 	public void forceWifiUsage(boolean useWifi) {
         boolean canWriteFlag = false;
-		
+
         if (useWifi) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
@@ -213,21 +213,21 @@ public class RNWifiModule extends ReactContextBaseJavaModule {
 
 		//Make new configuration
 		WifiConfiguration conf = new WifiConfiguration();
-		
+
         conf.SSID = ssid;
 
 		String capabilities = result.capabilities;
 
 		if (capabilities.toUpperCase().contains("WPA")) {
+			conf.SSID = String.format("\"%s\"", ssid);
 			conf.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
 			conf.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
 			conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
 			conf.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
 			conf.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
-			conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
-			conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104);
 			conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
 			conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
+			conf.preSharedKey = String.format("\"%s\"", password);
 		}	else if (capabilities.toUpperCase().contains("WEP")) {
 			conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
 			conf.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
@@ -279,22 +279,8 @@ public class RNWifiModule extends ReactContextBaseJavaModule {
 			return false;
 		}
 
-
-		boolean connected = false;
-		for (int i = 0; i < 30; i++) {
-			int networkId = wifi.getConnectionInfo().getNetworkId();
-			if (networkId != -1) {
-				connected = networkId == updateNetwork;
-				break;
-			}
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException ignored) {
-				break;
-			}
-		}
-		
-		return connected;
+		wifi.enableNetwork(updateNetwork, true);
+		return wifi.reconnect();
 	}
 
 	//Disconnect current Wifi.
@@ -335,12 +321,12 @@ public class RNWifiModule extends ReactContextBaseJavaModule {
 	}
 
 	//This method will return current wifi frequency
-	@ReactMethod
-	public void getFrequency(final Callback callback) {
-		WifiInfo info = wifi.getConnectionInfo();
-		int frequency = info.getFrequency();
-		callback.invoke(frequency);
-	}
+//	@ReactMethod
+//////	public void getFrequency(final Callback callback) {
+//////		WifiInfo info = wifi.getConnectionInfo();
+//////		int frequency = info.getFrequency();
+//////		callback.invoke(frequency);
+//////	}
 
 	//This method will return current IP
 	@ReactMethod
