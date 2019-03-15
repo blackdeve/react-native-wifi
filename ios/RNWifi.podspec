@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name         = "RNWifi"
-  s.version      = "1.0.0"
+  s.version      = "1.0.2"
   s.summary      = "RNWifi"
   s.description  = <<-DESC
                   RNWifi
