@@ -301,13 +301,45 @@ public class RNWifiModule extends ReactContextBaseJavaModule {
 
 		// This value should be wrapped in double quotes, so we need to unwrap it.
 		String ssid = info.getSSID(); */
+		String ssid = null;
+		if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O||Build.VERSION.SDK_INT==Build.VERSION_CODES.P) {
 
-		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-		String ssid = networkInfo.getExtraInfo();
+			WifiManager mWifiManager = wifi;
 
-		if (ssid.startsWith("\"") && ssid.endsWith("\"")) {
-			ssid = ssid.substring(1, ssid.length() - 1);
+			assert mWifiManager != null;
+			WifiInfo info = mWifiManager.getConnectionInfo();
+
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+				ssid =  info.getSSID();
+			} else {
+				int networId = info.getNetworkId();
+				List<WifiConfiguration> netConfList = mWifiManager.getConfiguredNetworks();
+				for(WifiConfiguration wificonf:netConfList){
+					if(wificonf.networkId == networId){
+						ssid =  wificonf.SSID.replace("\"", "");
+					}
+				}
+//				ssid =  info.getSSID().replace("\"", "");
+			}
+
+		} else if (Build.VERSION.SDK_INT==Build.VERSION_CODES.O_MR1){
+
+			ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+			assert connManager != null;
+			NetworkInfo networkInfo = connManager.getActiveNetworkInfo();
+			if (networkInfo.isConnected()) {
+				if (networkInfo.getExtraInfo()!=null){
+					ssid = networkInfo.getExtraInfo().replace("\"","");
+				}
+			}
+
+			/* ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+			NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+			String ssid = networkInfo.getExtraInfo();
+
+			if (ssid.startsWith("\"") && ssid.endsWith("\"")) {
+				ssid = ssid.substring(1, ssid.length() - 1);
+			} */
 		}
 
 		promise.resolve(ssid);
