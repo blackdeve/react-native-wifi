@@ -5,6 +5,12 @@
 //#import <UIKit/UIKit.h>
 
 @implementation WifiManager
+  
++ (BOOL)requiresMainQueueSetup
+{
+  return YES;
+}
+
 RCT_EXPORT_MODULE();
 
 RCT_EXPORT_METHOD(connectToSSID:(NSString*)ssid
@@ -87,11 +93,9 @@ RCT_REMAP_METHOD(getCurrentWifiSSID,
 }
 
 - (NSDictionary*)constantsToExport {
-    // Officially better to use UIApplicationOpenSettingsURLString
     return @{
-             @"settingsURL": @"App-Prefs:root=WIFI"
+             @"settingsURL": @"UIApplicationOpenSettingsURLString"
              };
 }
 
 @end
-
