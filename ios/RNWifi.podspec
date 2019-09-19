@@ -6,7 +6,7 @@ Pod::Spec.new do |s|
   s.description  = <<-DESC
                   RNWifi
                    DESC
-  s.homepage     = ""
+  s.homepage     = "https://github.com/blackdeve/react-native-wifi"
   s.license      = "MIT"
   # s.license      = { :type => "MIT", :file => "FILE_LICENSE" }
   s.author             = { "author" => "author@domain.cn" }
